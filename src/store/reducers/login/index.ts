@@ -17,7 +17,8 @@ export default function auth(state = initialState, action) {
       return {
         ...state,
         isFetching: true,
-        isAuthenticated: true
+        isAuthenticated: true,
+        user: action.payload
       }
     case LOGIN_SUCCESS:
       return {

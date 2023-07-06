@@ -13,12 +13,15 @@ import AdminHeader from '../components/Header/AdminHeader'
 import Link from 'next/link'
 import { PieChartOutlined } from '@ant-design/icons'
 import { MusicNote } from '@mui/icons-material'
+import { useSelector } from 'react-redux'
+import { RootState } from '../store/actions/login/types'
 
 const { Content, Footer, Sider } = Layout
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
   const [collapsed, setCollapsed] = useState(false)
   const [selectedKey, setSelectedKey] = useState('1')
+  const { user } = useSelector((state: RootState) => state.login)
   const router = useRouter()
 
   Router.events.on('routeChangeStart', url => {
@@ -41,46 +44,47 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
         />
       </Head>
       <ThemeProvider theme={theme}>
+        <GlobalStyle />
         {router.pathname !== '/' ? (
           <Layout style={{ minHeight: '100vh' }}>
-            <Sider
-              collapsible
-              collapsed={collapsed}
-              onCollapse={value => setCollapsed(value)}
-            >
-              <div className="demo-logo-vertical" />
-              <Menu theme="dark" selectedKeys={[selectedKey]} mode="inline">
-                <Menu.Item
-                  key="1"
-                  icon={<PieChartOutlined />}
-                  onClick={() => setSelectedKey('1')}
-                >
-                  <Link href="/dashboard">Pedidos</Link>
-                </Menu.Item>
-                <Menu.Item
-                  key="2"
-                  icon={<MusicNote />}
-                  onClick={() => setSelectedKey('2')}
-                >
-                  <Link href="/musics">Músicas</Link>
-                </Menu.Item>
-              </Menu>
-            </Sider>
+            <AdminHeader username={user.username} />
             <Layout>
-              <AdminHeader title="ARABELA" username="mateus" />
-              <Content style={{ margin: '0 16px', marginTop: '100px' }}>
-                <Component {...pageProps} />
-              </Content>
-              <Footer style={{ textAlign: 'center' }}>
-                Arabela Banda ©2023 Designed by Mateus Gambaro & Gustavo Faria
-              </Footer>
+              <Sider
+                collapsible
+                collapsed={collapsed}
+                onCollapse={value => setCollapsed(value)}
+              >
+                <div className="demo-logo-vertical" />
+                <Menu theme="dark" selectedKeys={[selectedKey]} mode="inline">
+                  <Menu.Item
+                    key="1"
+                    icon={<PieChartOutlined />}
+                    onClick={() => setSelectedKey('1')}
+                  >
+                    <Link href="/dashboard">Pedidos</Link>
+                  </Menu.Item>
+                  <Menu.Item
+                    key="2"
+                    icon={<MusicNote />}
+                    onClick={() => setSelectedKey('2')}
+                  >
+                    <Link href="/musics">Músicas</Link>
+                  </Menu.Item>
+                </Menu>
+              </Sider>
+              <Layout>
+                <Content style={{ margin: '0 16px', marginTop: '64px' }}>
+                  <Component {...pageProps} />
+                </Content>
+                <Footer style={{ textAlign: 'center' }}>
+                  Arabela Banda ©2023 Designed by Mateus Gambaro & Gustavo Faria
+                </Footer>
+              </Layout>
             </Layout>
           </Layout>
         ) : (
           <Component {...pageProps} />
         )}
-
-        <GlobalStyle />
       </ThemeProvider>
     </>
   )

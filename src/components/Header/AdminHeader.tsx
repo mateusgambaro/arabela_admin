@@ -1,14 +1,13 @@
 import React from 'react'
 import { Layout, Menu, Dropdown, Button, Avatar } from 'antd'
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons'
-import { TitleContainer, UserContainer } from './styled'
+import { LogoContainer, TitleContainer, UserContainer } from './styled'
+import Image from 'next/image'
+import arabela_logo_header from '../../../public/arabela_logo_header.png'
 
 const { Header } = Layout
 
-const AdminHeader: React.FC<{ title: string; username: string }> = ({
-  title,
-  username
-}) => {
+const AdminHeader: React.FC<{ username: string }> = ({ username }) => {
   const logoutMenu = (
     <Menu>
       <Menu.Item key="1">
@@ -29,13 +28,20 @@ const AdminHeader: React.FC<{ title: string; username: string }> = ({
     <Header
       style={{
         display: 'flex',
-        position: 'fixed',
-        zIndex: 1,
-        width: '100%'
+        width: '100%',
+        justifyContent: 'space-between',
+        alignItems: 'center',
       }}
     >
+      <LogoContainer>
+        <Image
+          src={arabela_logo_header}
+          alt="arabela-logo"
+          width={150}
+          height={150}
+        />
+      </LogoContainer>
       <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']}>
-        <TitleContainer>{title}</TitleContainer>
         <UserContainer>
           <Dropdown overlay={logoutMenu} key="2">
             <span>

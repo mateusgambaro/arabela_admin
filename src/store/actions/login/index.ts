@@ -10,7 +10,10 @@ export const loginRequest = (payload: {
   payload
 })
 
-export const loginSuccess = payload => ({
+export const loginSuccess = (payload: {
+  username: string
+  password: string
+}) => ({
   type: LOGIN_SUCCESS,
   payload
 })
