@@ -8,6 +8,9 @@ import DoughnutChart from '../components/DoughnutChart/DoughnutChart'
 import AdminHeader from '../components/Header/AdminHeader'
 import { MusicNote } from '@mui/icons-material'
 import Link from 'next/link'
+import { MusicsByNight } from '../components/MusicsByNight/MusicsByNight'
+import { ChartContainer, DoughnutContainer } from '../styles/pages/Dashboard'
+import BarChart from '../components/BarCharts.tsx/BarCharts'
 
 const { Content, Footer, Sider } = Layout
 
@@ -17,7 +20,15 @@ const App: React.FC = () => {
 
   return (
     <>
-      <DoughnutChart />
+      <ChartContainer>
+        <DoughnutContainer>
+          <BarChart />
+        </DoughnutContainer>
+        <DoughnutContainer>
+          <DoughnutChart />
+        </DoughnutContainer>
+      </ChartContainer>
+      <MusicsByNight />
       <InfoTable />
     </>
   )
