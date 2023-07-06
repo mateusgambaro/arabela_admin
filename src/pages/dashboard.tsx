@@ -28,7 +28,7 @@ const App: React.FC = () => {
           <DoughnutChart />
         </DoughnutContainer>
       </ChartContainer>
-      <MusicsByNight />
+      {/* <MusicsByNight /> */}
       <InfoTable />
     </>
   )

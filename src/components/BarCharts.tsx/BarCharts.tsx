@@ -1,6 +1,7 @@
 import { ResponsiveBar } from '@nivo/bar'
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { Title } from './styled'
 
 type Datum = {
   music: string
@@ -39,6 +40,7 @@ const BarChart: React.FC = () => {
 
   return (
     <div style={{ height: '500px' }}>
+      <Title>Músicas pedidas</Title>
       {chartData.length > 0 && (
         <ResponsiveBar
           data={chartData}
@@ -77,7 +79,7 @@ const BarChart: React.FC = () => {
               id: 'lines'
             }
           ]}
-          borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
+          borderColor={{ from: 'color', modifiers: [['darker', 4.6]] }}
           axisTop={null}
           axisRight={null}
           axisBottom={{
@@ -98,7 +100,7 @@ const BarChart: React.FC = () => {
           }}
           labelSkipWidth={12}
           labelSkipHeight={12}
-          labelTextColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
+          labelTextColor={{ from: 'color', modifiers: [['darker', 4.6]] }}
           animate={true}
           motionStiffness={90}
           motionDamping={15}

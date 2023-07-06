@@ -2,6 +2,7 @@ import { ResponsivePie } from '@nivo/pie'
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import chroma from 'chroma-js'
+import { Title } from './styled'
 
 type Datum = {
   id: string
@@ -57,6 +58,7 @@ const DoughnutChart: React.FC = () => {
 
   return (
     <div style={{ height: '500px' }}>
+      <Title>Faixa etária</Title>
       {chartData.length > 0 && (
         <ResponsivePie
           data={chartData}
