@@ -50,9 +50,9 @@ const InfoTable: React.FC = () => {
 
   React.useEffect(() => {
     axios
-      .get('https://11dsf3r6r6.execute-api.us-east-1.amazonaws.com/stage')
+      .get('https://4x26pxitic.execute-api.us-east-1.amazonaws.com/Stage/songs')
       .then(response => {
-        const transformedData = response.data.body.map((item, index) => ({
+        const transformedData = response.data.map((item, index) => ({
           key: index,
           song_name: item.song_name,
           user_name: item.user_name,

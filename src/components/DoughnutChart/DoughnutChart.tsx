@@ -16,9 +16,9 @@ const DoughnutChart: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get('https://11dsf3r6r6.execute-api.us-east-1.amazonaws.com/stage')
+      .get('https://4x26pxitic.execute-api.us-east-1.amazonaws.com/Stage/songs')
       .then(response => {
-        const dataFromDB = response.data.body
+        const dataFromDB = response.data
         const baseColor = '#c80c5d'
         const colorScale = chroma
           .scale([baseColor, 'white'])

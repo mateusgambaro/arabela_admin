@@ -12,7 +12,7 @@ import { Layout, Menu } from 'antd'
 import AdminHeader from '../components/Header/AdminHeader'
 import Link from 'next/link'
 import { PieChartOutlined } from '@ant-design/icons'
-import { MusicNote } from '@mui/icons-material'
+import { Article, MusicNote } from '@mui/icons-material'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store/actions/login/types'
 
@@ -69,6 +69,13 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
                     onClick={() => setSelectedKey('2')}
                   >
                     <Link href="/musics">Músicas</Link>
+                  </Menu.Item>
+                  <Menu.Item
+                    key="3"
+                    icon={<Article />}
+                    onClick={() => setSelectedKey('3')}
+                  >
+                    <Link href="/musics">Repertório</Link>
                   </Menu.Item>
                 </Menu>
               </Sider>

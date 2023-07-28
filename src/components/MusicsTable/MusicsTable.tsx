@@ -10,8 +10,10 @@ import {
   Table
 } from 'antd'
 import type { ColumnsType, TableProps } from 'antd/es/table'
-import { TableContainer } from './styled'
+import { ButtonContainer, TableContainer } from './styled'
 import axios from 'axios'
+import { DownloadOutlined } from '@mui/icons-material'
+import PlaylistModal from '../PlaylistModal/PlaylistModal'
 
 interface DataType {
   key: React.Key
@@ -36,6 +38,22 @@ const columns: ColumnsType<DataType> = [
   {
     title: 'Status',
     dataIndex: 'status'
+  },
+  {
+    title: 'Repertório',
+    dataIndex: 'setList',
+    render: (_text: string, _record: DataType, _index: number) => (
+      <Button
+        style={{
+          backgroundColor: '#C80C5D',
+          color: 'white'
+        }}
+        onClick={() => console.log('Add to repertoire')}
+      >
+        Adicionar
+      </Button>
+    ),
+    width: 100
   }
 ]
 const onChange: TableProps<DataType>['onChange'] = (pagination, filters) => {
@@ -45,12 +63,12 @@ const onChange: TableProps<DataType>['onChange'] = (pagination, filters) => {
 const MusicsTable: React.FC = () => {
   const [data, setData] = React.useState<DataType[]>([])
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const [openArtistModal, setOpenArtistModal] = useState(false)
+  const [loadingArtist, setLoadingArtist] = useState(false)
+  const [artists, setArtists] = useState([])
   const [form] = Form.useForm()
+  const [artistForm] = Form.useForm()
   const { Option } = Select
-
-  const showModal = () => {
-    setIsModalVisible(true)
-  }
 
   const handleOk = () => {
     form
@@ -65,45 +83,86 @@ const MusicsTable: React.FC = () => {
       })
   }
 
-  const handleCancel = () => {
-    setIsModalVisible(false)
+  const handleSubmitArtist = () => {
+    artistForm
+      .validateFields()
+      .then(values => {
+        setLoadingArtist(true)
+        axios
+          .post(
+            'https://4x26pxitic.execute-api.us-east-1.amazonaws.com/Stage/admin/artists',
+            { name: values.artistName }
+          )
+          .then(() => {
+            artistForm.resetFields()
+            setLoadingArtist(false)
+            setOpenArtistModal(false)
+          })
+          .catch(error => {
+            console.error('Error while creating artist:', error)
+            setLoadingArtist(false)
+          })
+      })
+      .catch(info => {
+        console.log('Validate Failed:', info)
+      })
   }
 
   React.useEffect(() => {
     axios
-      .get('https://11dsf3r6r6.execute-api.us-east-1.amazonaws.com/stage')
+      .get(
+        'https://4x26pxitic.execute-api.us-east-1.amazonaws.com/Stage/admin/sogs'
+      )
       .then(response => {
-        const transformedData = response.data.body.map((item, index) => ({
+        const transformedData = response.data.map((item, index) => ({
           key: index,
-          song_name: item.song_name,
-          user_name: item.user_name,
-          age: item.age,
-          phone: item.phone,
-          comments: item.comments,
-          rating: item.rating ? 'Gostei' : 'Não gostei'
+          id: item.id,
+          music: item.name,
+          artist: item.artist_name,
+          status: item.status
         }))
         setData(transformedData)
       })
       .catch(error => console.error(error))
   }, [])
 
+  React.useEffect(() => {
+    axios
+      .get(
+        'https://4x26pxitic.execute-api.us-east-1.amazonaws.com/Stage/admin/artists'
+      )
+      .then(response => {
+        const transformedData = response.data.map((item, index) => ({
+          key: index,
+          id: item.id,
+          name: item.name
+        }))
+        setArtists(transformedData)
+      })
+      .catch(error => console.error(error))
+  }, [])
+
   return (
     <TableContainer>
-      <Button
-        style={{
-          marginBottom: '50px',
-          backgroundColor: '#C80C5D',
-          color: 'white',
-        }}
-        onClick={showModal}
-      >
-        Adicionar Música
-      </Button>
+      <ButtonContainer>
+        <Button
+          style={{
+            backgroundColor: '#C80C5D',
+            color: 'white'
+          }}
+          onClick={() => setIsModalVisible(true)}
+        >
+          Adicionar música
+        </Button>
+        <PlaylistModal />
+      </ButtonContainer>
       <Modal
         title="Adicionar nova música"
-        visible={isModalVisible}
+        open={isModalVisible}
         onOk={handleOk}
-        onCancel={handleCancel}
+        okText="Adicionar"
+        cancelText="Cancelar"
+        onCancel={() => setIsModalVisible(false)}
       >
         <Form
           form={form}
@@ -126,11 +185,25 @@ const MusicsTable: React.FC = () => {
             rules={[
               {
                 required: true,
-                message: 'Por favor, insira o nome do artista!'
+                message: 'Por favor, selecione um artista!'
               }
             ]}
           >
-            <Input />
+            <Select placeholder="Selecione uma artista">
+              {artists.map(artist => (
+                <Option value={artist.id}>{artist.name}</Option>
+              ))}
+            </Select>
+            <Button
+              style={{
+                marginTop: '10px',
+                backgroundColor: '#C80C5D',
+                color: 'white'
+              }}
+              onClick={() => setOpenArtistModal(true)}
+            >
+              Adicionar novo artista
+            </Button>
           </Form.Item>
           <Form.Item
             label="Status"
@@ -147,6 +220,26 @@ const MusicsTable: React.FC = () => {
               <Option value="played">REPERTÓRIO</Option>
               <Option value="old">ANTIGA</Option>
             </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title="Novo artista"
+        open={openArtistModal}
+        onOk={() => handleSubmitArtist()}
+        okText="Adicionar"
+        cancelText="Cancelar"
+        onCancel={() => setOpenArtistModal(false)}
+        confirmLoading={loadingArtist}
+      >
+        <Form
+          form={artistForm}
+          name="newArtist"
+          layout="vertical"
+          initialValues={{ remember: true }}
+        >
+          <Form.Item label="Nome" name="artistName">
+            <Input />
           </Form.Item>
         </Form>
       </Modal>

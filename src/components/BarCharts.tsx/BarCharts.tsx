@@ -13,9 +13,9 @@ const BarChart: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get('https://11dsf3r6r6.execute-api.us-east-1.amazonaws.com/stage')
+      .get('https://4x26pxitic.execute-api.us-east-1.amazonaws.com/Stage/songs')
       .then(response => {
-        const dataFromDB: { song_name: string }[] = response.data.body
+        const dataFromDB: { song_name: string }[] = response.data
 
         const songCounts: Record<string, number> = dataFromDB.reduce(
           (acc: Record<string, number>, curr: { song_name: string }) => {
