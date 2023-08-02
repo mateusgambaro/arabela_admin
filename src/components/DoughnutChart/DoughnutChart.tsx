@@ -1,8 +1,9 @@
 import { ResponsivePie } from '@nivo/pie'
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
 import chroma from 'chroma-js'
 import { Title } from './styled'
+import axiosInstance from '../../config/api'
+import { Skeleton } from '@mui/material'
 
 type Datum = {
   id: string
@@ -13,10 +14,12 @@ type Datum = {
 
 const DoughnutChart: React.FC = () => {
   const [chartData, setChartData] = useState<Datum[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    axios
-      .get('https://4x26pxitic.execute-api.us-east-1.amazonaws.com/Stage/songs')
+    setIsLoading(true)
+    axiosInstance
+      .get('/admin/requests')
       .then(response => {
         const dataFromDB = response.data
         const baseColor = '#c80c5d'
@@ -41,7 +44,7 @@ const DoughnutChart: React.FC = () => {
             ageGroups['Acima de 40 anos'] += 1
           }
         })
-
+        setIsLoading(false)
         setChartData(
           Object.keys(ageGroups).map((key, i) => ({
             id: key,
@@ -59,7 +62,17 @@ const DoughnutChart: React.FC = () => {
   return (
     <div style={{ height: '500px' }}>
       <Title>Faixa etária</Title>
-      {chartData.length > 0 && (
+      {isLoading ? (
+        <Skeleton
+          variant="rectangular"
+          style={{
+            width: '100%',
+            height: '80%',
+            padding: '40px',
+            marginTop: '10px'
+          }}
+        />
+      ) : (
         <ResponsivePie
           data={chartData}
           margin={{ top: 40, right: 80, bottom: 80, left: 80 }}

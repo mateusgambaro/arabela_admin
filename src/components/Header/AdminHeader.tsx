@@ -1,24 +1,37 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Layout, Menu, Dropdown, Button, Avatar } from 'antd'
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons'
 import { LogoContainer, TitleContainer, UserContainer } from './styled'
 import Image from 'next/image'
 import arabela_logo_header from '../../../public/arabela_logo_header.png'
+import { logoutUser } from '../../services/login'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../../store/actions/login/types'
+import { useRouter } from 'next/router'
+import { logOut } from '../../store/actions/login'
 
 const { Header } = Layout
 
 const AdminHeader: React.FC<{ username: string }> = ({ username }) => {
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.login
+  )
+  const router = useRouter()
+  const dispatch = useDispatch()
   const logoutMenu = (
     <Menu>
       <Menu.Item key="1">
         <Button
           type="link"
           icon={<LogoutOutlined />}
-          onClick={() => {
-            /* add your logout function here */
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
+          onClick={async () => {
+            await logoutUser()
+            dispatch(logOut())
+            await router.push('/')
           }}
         >
-          Logout
+          Sair
         </Button>
       </Menu.Item>
     </Menu>
@@ -30,7 +43,7 @@ const AdminHeader: React.FC<{ username: string }> = ({ username }) => {
         display: 'flex',
         width: '100%',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'center'
       }}
     >
       <LogoContainer>
@@ -49,7 +62,7 @@ const AdminHeader: React.FC<{ username: string }> = ({ username }) => {
                 style={{ backgroundColor: '#87d068', marginRight: '8px' }}
                 icon={<UserOutlined />}
               />
-              {username}
+              {user.username}
             </span>
           </Dropdown>
         </UserContainer>

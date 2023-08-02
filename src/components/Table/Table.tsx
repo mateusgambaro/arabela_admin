@@ -2,7 +2,7 @@ import React from 'react'
 import { Menu, MenuProps, Table } from 'antd'
 import type { ColumnsType, TableProps } from 'antd/es/table'
 import { TableContainer } from './styled'
-import axios from 'axios'
+import axiosInstance from '../../config/api'
 
 interface DataType {
   key: React.Key
@@ -49,8 +49,8 @@ const InfoTable: React.FC = () => {
   const [data, setData] = React.useState<DataType[]>([])
 
   React.useEffect(() => {
-    axios
-      .get('https://4x26pxitic.execute-api.us-east-1.amazonaws.com/Stage/songs')
+    axiosInstance
+      .get('/admin/requests')
       .then(response => {
         const transformedData = response.data.map((item, index) => ({
           key: index,

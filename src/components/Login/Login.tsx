@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { useRouter } from 'next/router'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Container, InputContainer, StyledTextField } from './styled'
 import { Button, InputLabel } from '@mui/material'
 import Loading from '../Loading/Loading'
 import Loader from '../Loader/Loader'
 import { useDispatch, useSelector } from 'react-redux'
-import { loginRequest } from '../../store/actions/login'
 import { RootState } from '../../store/actions/login/types'
+import { loginUser } from '../../services/login'
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -29,15 +30,14 @@ const Login: React.FC = () => {
     const { name, value } = event.target
     setFormData({ ...formData, [name]: value })
   }
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     dispatch(
-      loginRequest({ username: formData.username, password: formData.password })
+      loginUser( formData.username,formData.password )
     )
   }
 
-  // Redirect user if authenticated
-  React.useEffect(() => {
+  useEffect(() => {
     if (isAuthenticated) {
       router.push('/dashboard')
     }

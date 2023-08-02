@@ -1,7 +1,8 @@
 import { ResponsiveBar } from '@nivo/bar'
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
 import { Title } from './styled'
+import axiosInstance from '../../config/api'
+import { Skeleton } from '@mui/material'
 
 type Datum = {
   music: string
@@ -10,10 +11,12 @@ type Datum = {
 
 const BarChart: React.FC = () => {
   const [chartData, setChartData] = useState<Datum[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    axios
-      .get('https://4x26pxitic.execute-api.us-east-1.amazonaws.com/Stage/songs')
+    setIsLoading(true)
+    axiosInstance
+      .get('/admin/requests')
       .then(response => {
         const dataFromDB: { song_name: string }[] = response.data
 
@@ -31,6 +34,7 @@ const BarChart: React.FC = () => {
           quantity: songCounts[song]
         }))
 
+        setIsLoading(false)
         setChartData(formattedData)
       })
       .catch(error => {
@@ -41,7 +45,12 @@ const BarChart: React.FC = () => {
   return (
     <div style={{ height: '500px' }}>
       <Title>Músicas pedidas</Title>
-      {chartData.length > 0 && (
+      {isLoading ? (
+        <Skeleton
+          variant="rectangular"
+          style={{ width: '100%', height: '80%', padding: '40px', marginTop: '10px' }}
+        />
+      ) : (
         <ResponsiveBar
           data={chartData}
           keys={['quantity']}

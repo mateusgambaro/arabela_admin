@@ -5,6 +5,9 @@ export interface RootState {
     user: {
       username: string
       password: string
+      idToken: string
+      accessToken: string
+      refreshToken: string
     };
     // errorMessage: string;
   }

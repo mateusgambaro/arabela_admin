@@ -14,6 +14,7 @@ import { ButtonContainer, TableContainer } from './styled'
 import axios from 'axios'
 import { DownloadOutlined } from '@mui/icons-material'
 import PlaylistModal from '../PlaylistModal/PlaylistModal'
+import axiosInstance from '../../config/api'
 
 interface DataType {
   key: React.Key
@@ -88,9 +89,9 @@ const MusicsTable: React.FC = () => {
       .validateFields()
       .then(values => {
         setLoadingArtist(true)
-        axios
+        axiosInstance
           .post(
-            'https://4x26pxitic.execute-api.us-east-1.amazonaws.com/Stage/admin/artists',
+            '/admin/artists',
             { name: values.artistName }
           )
           .then(() => {
@@ -109,9 +110,9 @@ const MusicsTable: React.FC = () => {
   }
 
   React.useEffect(() => {
-    axios
+    axiosInstance
       .get(
-        'https://4x26pxitic.execute-api.us-east-1.amazonaws.com/Stage/admin/sogs'
+        '/admin/songs'
       )
       .then(response => {
         const transformedData = response.data.map((item, index) => ({
@@ -127,9 +128,9 @@ const MusicsTable: React.FC = () => {
   }, [])
 
   React.useEffect(() => {
-    axios
+    axiosInstance
       .get(
-        'https://4x26pxitic.execute-api.us-east-1.amazonaws.com/Stage/admin/artists'
+        '/admin/artists'
       )
       .then(response => {
         const transformedData = response.data.map((item, index) => ({
