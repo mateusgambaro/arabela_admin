@@ -1,18 +1,7 @@
 import React, { useState } from 'react'
-import {
-  Button,
-  Form,
-  Input,
-  Menu,
-  MenuProps,
-  Modal,
-  Select,
-  Table
-} from 'antd'
+import { Button, Form, Input, Modal, Select, Table } from 'antd'
 import type { ColumnsType, TableProps } from 'antd/es/table'
 import { ButtonContainer, TableContainer } from './styled'
-import axios from 'axios'
-import { DownloadOutlined } from '@mui/icons-material'
 import PlaylistModal from '../PlaylistModal/PlaylistModal'
 import axiosInstance from '../../config/api'
 
@@ -90,14 +79,19 @@ const MusicsTable: React.FC = () => {
       .then(values => {
         setLoadingArtist(true)
         axiosInstance
-          .post(
-            '/admin/artists',
-            { name: values.artistName }
-          )
-          .then(() => {
+          .post('/admin/artists', { name: values.artistName })
+          .then(response => {
             artistForm.resetFields()
             setLoadingArtist(false)
             setOpenArtistModal(false)
+            setArtists(prevArtists => [
+              ...prevArtists,
+              {
+                key: prevArtists.length,
+                id: response.data.id,
+                name: values.artistName
+              }
+            ])
           })
           .catch(error => {
             console.error('Error while creating artist:', error)
@@ -109,11 +103,46 @@ const MusicsTable: React.FC = () => {
       })
   }
 
+  const handleSubmitSong = () => {
+    form
+      .validateFields()
+      .then(values => {
+        setIsModalVisible(true)
+        axiosInstance
+          .post('/admin/songs', {
+            name: values.name,
+            artist: values.artist,
+            status: values.status
+          })
+          .then(response => {
+            form.resetFields()
+            setIsModalVisible(false)
+
+            setData(prevData => [
+              ...prevData,
+              {
+                key: prevData.length,
+                id: response.data.id,
+                music: values.name,
+                artist: artists.find(artist => artist.id === values.artist)
+                  ?.name,
+                status: values.status
+              }
+            ])
+          })
+          .catch(error => {
+            console.error('Error while creating song:', error)
+            setIsModalVisible(false)
+          })
+      })
+      .catch(info => {
+        console.log('Validate Failed:', info)
+      })
+  }
+
   React.useEffect(() => {
     axiosInstance
-      .get(
-        '/admin/songs'
-      )
+      .get('/admin/songs')
       .then(response => {
         const transformedData = response.data.map((item, index) => ({
           key: index,
@@ -129,9 +158,7 @@ const MusicsTable: React.FC = () => {
 
   React.useEffect(() => {
     axiosInstance
-      .get(
-        '/admin/artists'
-      )
+      .get('/admin/artists')
       .then(response => {
         const transformedData = response.data.map((item, index) => ({
           key: index,
@@ -160,7 +187,7 @@ const MusicsTable: React.FC = () => {
       <Modal
         title="Adicionar nova música"
         open={isModalVisible}
-        onOk={handleOk}
+        onOk={handleSubmitSong}
         okText="Adicionar"
         cancelText="Cancelar"
         onCancel={() => setIsModalVisible(false)}
@@ -192,20 +219,22 @@ const MusicsTable: React.FC = () => {
           >
             <Select placeholder="Selecione uma artista">
               {artists.map(artist => (
-                <Option value={artist.id}>{artist.name}</Option>
+                <Option key={artist.id} value={artist.id}>
+                  {artist.name}
+                </Option>
               ))}
             </Select>
-            <Button
-              style={{
-                marginTop: '10px',
-                backgroundColor: '#C80C5D',
-                color: 'white'
-              }}
-              onClick={() => setOpenArtistModal(true)}
-            >
-              Adicionar novo artista
-            </Button>
           </Form.Item>
+          <Button
+            style={{
+              marginTop: '10px',
+              backgroundColor: '#C80C5D',
+              color: 'white'
+            }}
+            onClick={() => setOpenArtistModal(true)}
+          >
+            Adicionar novo artista
+          </Button>
           <Form.Item
             label="Status"
             name="status"

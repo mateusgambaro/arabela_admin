@@ -3,23 +3,26 @@
 import { useRouter } from 'next/router'
 import React, { useState, useEffect } from 'react'
 import { Container, InputContainer, StyledTextField } from './styled'
-import { Button, InputLabel } from '@mui/material'
+import { Button, IconButton, InputAdornment, InputLabel } from '@mui/material'
 import Loading from '../Loading/Loading'
 import Loader from '../Loader/Loader'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../store/actions/login/types'
 import { loginUser } from '../../services/login'
+import { Visibility, VisibilityOff } from '@mui/icons-material'
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
     username: '',
     password: ''
   })
+  const [showPassword, setShowPassword] = useState(false)
 
-  // useDispatch hook to dispatch actions
+  const handleClickShowPassword = () => setShowPassword(!showPassword)
+  const handleMouseDownPassword = () => setShowPassword(!showPassword)
+
   const dispatch = useDispatch()
 
-  // useSelector hook to select state from redux store
   const { isFetching, isAuthenticated } = useSelector(
     (state: RootState) => state.login
   )
@@ -32,9 +35,7 @@ const Login: React.FC = () => {
   }
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
-    dispatch(
-      loginUser( formData.username,formData.password )
-    )
+    dispatch(loginUser(formData.username, formData.password))
   }
 
   useEffect(() => {
@@ -67,11 +68,24 @@ const Login: React.FC = () => {
                 required
                 placeholder="Senha*"
                 name="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 InputLabelProps={{ shrink: false }}
                 value={formData.password}
                 onChange={handleChange}
                 variant="outlined"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
               />
             </div>
             <Button
