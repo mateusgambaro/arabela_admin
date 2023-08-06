@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable @typescript-eslint/no-floating-promises */
 import { useRouter } from 'next/router'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react'
 import { Container, InputContainer, StyledTextField } from './styled'
 import { Button, IconButton, InputAdornment, InputLabel } from '@mui/material'
 import Loading from '../Loading/Loading'
@@ -10,39 +9,40 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../store/actions/login/types'
 import { loginUser } from '../../services/login'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
+import { ThunkDispatch } from 'redux-thunk'
+import { AnyAction, Store } from 'redux'
+
+interface FormData {
+  username: string
+  password: string
+}
 
 const Login: React.FC = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     username: '',
     password: ''
   })
   const [showPassword, setShowPassword] = useState(false)
 
-  const handleClickShowPassword = () => setShowPassword(!showPassword)
-  const handleMouseDownPassword = () => setShowPassword(!showPassword)
-
-  const dispatch = useDispatch()
-
+  const dispatch: ThunkDispatch<Store, unknown, AnyAction> = useDispatch()
   const { isFetching, isAuthenticated } = useSelector(
     (state: RootState) => state.login
   )
-
   const router = useRouter()
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target
-    setFormData({ ...formData, [name]: value })
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
-  const handleSubmit = async (event: React.FormEvent) => {
+
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
-    dispatch(loginUser(formData.username, formData.password))
+    await dispatch(loginUser(formData.username, formData.password))
   }
 
   useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/dashboard')
-    }
-  }, [isAuthenticated])
+    if (isAuthenticated) void router.push('/dashboard')
+  }, [isAuthenticated, router])
 
   return (
     <>
@@ -50,44 +50,33 @@ const Login: React.FC = () => {
       <form onSubmit={handleSubmit}>
         <Container>
           <InputContainer>
-            <div style={{ width: '100%' }}>
-              <InputLabel style={{ color: '#d9d9d9' }}>Nome</InputLabel>
-              <StyledTextField
-                required
-                placeholder="Username*"
-                name="username"
-                InputLabelProps={{ shrink: false }}
-                value={formData.username}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </div>
-            <div style={{ width: '100%' }}>
-              <InputLabel style={{ color: '#d9d9d9' }}>Senha</InputLabel>
-              <StyledTextField
-                required
-                placeholder="Senha*"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                InputLabelProps={{ shrink: false }}
-                value={formData.password}
-                onChange={handleChange}
-                variant="outlined"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                      >
-                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                      </IconButton>
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </div>
+            <InputLabelField
+              name="username"
+              label="Login"
+              value={formData.username}
+              handleChange={handleChange}
+            />
+            <InputLabelField
+              name="password"
+              label="Senha"
+              type={showPassword ? 'text' : 'password'}
+              value={formData.password}
+              handleChange={handleChange}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword(prev => !prev)}
+                    onMouseDown={e => {
+                      e.preventDefault()
+                      setShowPassword(prev => !prev)
+                    }}
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
             <Button
               type="submit"
               variant="contained"
@@ -106,5 +95,38 @@ const Login: React.FC = () => {
     </>
   )
 }
+
+interface InputLabelFieldProps {
+  name: string
+  label: string
+  value: string
+  type?: string
+  handleChange: (event: ChangeEvent<HTMLInputElement>) => void
+  endAdornment?: JSX.Element
+}
+
+const InputLabelField: React.FC<InputLabelFieldProps> = ({
+  name,
+  label,
+  value,
+  type = 'text',
+  handleChange,
+  endAdornment
+}) => (
+  <div style={{ width: '100%' }}>
+    <InputLabel style={{ color: '#d9d9d9' }}>{label}</InputLabel>
+    <StyledTextField
+      required
+      placeholder={`${label}*`}
+      name={name}
+      type={type}
+      InputLabelProps={{ shrink: false }}
+      value={value}
+      onChange={handleChange}
+      variant="outlined"
+      InputProps={{ endAdornment }}
+    />
+  </div>
+)
 
 export default Login

@@ -15,6 +15,7 @@ const rootReducer = combineReducers({
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
+
 export default function configureStore() {
   const store = createStore(persistedReducer, applyMiddleware(thunkMiddleware));
   const persistor = persistStore(store);

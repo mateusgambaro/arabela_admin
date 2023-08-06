@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../store/actions/login/types'
 import { useRouter } from 'next/router'
 import { logOut } from '../../store/actions/login'
+import avatar from '../../../public/avatar.png'
 
 const { Header } = Layout
 
@@ -21,18 +22,32 @@ const AdminHeader: React.FC<{ username: string }> = ({ username }) => {
   const logoutMenu = (
     <Menu>
       <Menu.Item key="1">
-        <Button
-          type="link"
-          icon={<LogoutOutlined />}
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          onClick={async () => {
-            await logoutUser()
-            dispatch(logOut())
-            await router.push('/')
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'column'
           }}
         >
-          Sair
-        </Button>
+          <div
+            style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}
+          >
+            <Avatar src="/avatar.png" size={70} />
+            <span style={{ marginLeft: 10 }}>Guguinha</span>
+          </div>
+          <Button
+            type="link"
+            icon={<LogoutOutlined />}
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            onClick={async () => {
+              await logoutUser()
+              dispatch(logOut())
+              await router.push('/')
+            }}
+          >
+            Sair
+          </Button>
+        </div>
       </Menu.Item>
     </Menu>
   )
@@ -60,7 +75,7 @@ const AdminHeader: React.FC<{ username: string }> = ({ username }) => {
             <span>
               <Avatar
                 style={{ backgroundColor: '#87d068', marginRight: '8px' }}
-                icon={<UserOutlined />}
+                src="/avatar.png"
               />
               {user.username}
             </span>

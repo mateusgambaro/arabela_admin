@@ -111,8 +111,6 @@ const BarChart: React.FC = () => {
           labelSkipHeight={12}
           labelTextColor={{ from: 'color', modifiers: [['darker', 4.6]] }}
           animate={true}
-          motionStiffness={90}
-          motionDamping={15}
         />
       )}
     </div>

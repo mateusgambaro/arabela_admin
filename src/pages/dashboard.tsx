@@ -10,7 +10,7 @@ import { MusicNote } from '@mui/icons-material'
 import Link from 'next/link'
 import { MusicsByNight } from '../components/MusicsByNight/MusicsByNight'
 import { ChartContainer, DoughnutContainer } from '../styles/pages/Dashboard'
-import BarChart from '../components/BarCharts.tsx/BarCharts'
+import BarChart from '../components/BarCharts/BarCharts'
 
 const { Content, Footer, Sider } = Layout
 

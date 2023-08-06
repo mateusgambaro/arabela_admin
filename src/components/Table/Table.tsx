@@ -11,16 +11,22 @@ interface DataType {
   age: string
   phone: string
   comments: string
+  artist: { name: string }
 }
 
 const columns: ColumnsType<DataType> = [
+  {
+    title: 'Usuário',
+    dataIndex: 'user_name'
+  },
   {
     title: 'Música',
     dataIndex: 'song_name'
   },
   {
-    title: 'Usuário',
-    dataIndex: 'user_name'
+    title: 'Artista',
+    dataIndex: 'artist',
+    render: (artist: any) => artist?.name
   },
   {
     title: 'Idade',
@@ -59,7 +65,8 @@ const InfoTable: React.FC = () => {
           age: item.age,
           phone: item.phone,
           comments: item.comments,
-          rating: item.rating ? 'Gostei' : 'Não gostei'
+          rating: item.rating ? 'Gostei' : 'Não gostei',
+          artist: item.artist
         }))
         setData(transformedData)
       })
